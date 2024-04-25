@@ -52,7 +52,7 @@ void	ft_putnbr_fd(int n, int fd)
 			i--;
 		}
 		number_in_string[i] = n + '0';
-		ft_put_number_in_file(number_in_string, i, fd); 
+		ft_put_number_in_file(number_in_string, i, fd);
 	}
 }
 

@@ -18,12 +18,6 @@ int	print_p(unsigned long long int n, int count)
 	char	*hexa;
 
 	hexa = "0123456789abcdef";
-	if (n < 0)
-	{
-		n = -n;
-		write(1, "-", 1);
-		count++;
-	}
 	if (n >= 16)
 	{
 		count = print_p(n / 16, ++count);

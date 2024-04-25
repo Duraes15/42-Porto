@@ -19,7 +19,7 @@ int	ft_strncmp(char *s1, char *s2, size_t n)
 	int		comp;
 
 	comp = 0;
-	i = 0; 
+	i = 0;
 	while ((s1[i] != '\0' || s2[i] != '\0') && i < n)
 	{
 		comp = (unsigned char)s1[i] - (unsigned char)s2[i];
