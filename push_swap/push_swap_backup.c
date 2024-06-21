@@ -243,52 +243,6 @@ int there_is_dup_numbers(LInt nodo)
     }
     return 0;
 }
-// esta funcao vai sempre receber uma lista com mais do que um elemento
-int is_sorted(LInt nodo)
-{
-    if (nodo == NULL || lista_len(nodo) == 1)
-    while (nodo->prox != NULL)
-    {
-        if (nodo->valor > nodo->prox->valor)
-            return 0;
-    }
-    return 1;
-}
-
-void procura_menor(LInt nodo, t_menor_data *menor)
-{
-    int i;
-
-    i = 1;
-    menor->valor = nodo->valor;
-    menor->posicao = 0;
-    nodo = nodo->prox;
-    while (nodo != NULL)
-    {
-        if (menor->valor > nodo->valor)
-        {
-            menor->valor = nodo->valor;
-            menor->posicao = i;
-        }
-        nodo = nodo->prox;
-        i++;
-    }
-}
-
-void sort_stacks(LInt stack_a, LInt stack_b)
-{
-    t_menor_data menor;
-    int total_de_elems;
-
-    total_de_elems = lista_len(stack_a);
-    if (total_de_elems == 1)
-        return ;
-    while (!is_sorted(stack_a) || total_de_elems != lista_len(stack_a))
-    {
-        procura_menor(stack_a, &menor);
-        if (menor) // aqui temos de fazer os calculos, ja que temos o tamanho total da lista e a posicao do menor
-    }
-}
 
 int main(int argc, char **argv)
 {
@@ -303,5 +257,53 @@ int main(int argc, char **argv)
     n2 = NULL; // ao iniciar os processos entre as
                // duas stacks tenho de colocar a segunda a NULL e puxar um elem 
                // da criada pelo argv para esta, usando a funcao ft_push
-    sort_stacks(nodo, n2);
+    ft_push(&n2, &nodo); 
+    printf("Depois do push da ll do argv para o criado\n");
+    printf("Lista criada:\n");
+    print_list(n2); 
+    printf("\n");
+    printf("Lista do argv:\n");
+    print_list(nodo); 
+    printf("\n");
+
+
+    ft_push(&n2, &nodo); 
+    printf("Depois do 2nd push da ll do argv para o criado\n");
+    printf("Lista criada:\n");
+    print_list(n2); 
+    printf("\n");
+    printf("Lista do argv:\n");
+    print_list(nodo); 
+    printf("\n");
+
+
+    ft_double_swap(&nodo, &n2);
+    printf("Depois do double swap\n");
+    printf("Lista criada:\n");
+    print_list(n2); 
+    printf("\n");
+    printf("Lista do argv:\n");
+    print_list(nodo); 
+    printf("\n");
+
+    ft_double_rotate(&nodo, &n2);
+    printf("Depois do double rotate\n");
+    printf("Lista criada:\n");
+    print_list(n2); 
+    printf("\n");
+    printf("Lista do argv:\n");
+    print_list(nodo); 
+    printf("\n");
+
+    ft_double_reverse_rotate(&nodo, &n2);
+    printf("Depois do double reverse rotate\n");
+    printf("Lista criada:\n");
+    print_list(n2); 
+    printf("\n");
+    printf("Lista do argv:\n");
+    print_list(nodo); 
+    printf("\n");
+
+    liberta_lista(nodo); 
+    liberta_lista(n2); 
 }
