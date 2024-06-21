@@ -1,0 +1,26 @@
+NAME = push_swap
+
+FLAGS =  -Wall -Wextra -Werror
+LIBRARY = libft_printf/libft.a
+RM = rm -rf
+
+SRC = push_swap.c
+OBJ = $(SSRC:.c=.o)
+
+all: $(NAME)
+
+$(NAME) :  $(OBJ) $(LIBRARY)
+	cc $(FLAGS) $(SRC) -o $(NAME) $(LIBRARY)
+
+$(LIBRARY):
+	make -C libft_printf
+
+clean:
+	$(RM) $(OBJ)
+	make -C libft_printf clean
+
+fclean: clean
+	$(RM) push_swap
+	make -C libft_printf fclean
+
+re: fclean all
