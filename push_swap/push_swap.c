@@ -142,6 +142,7 @@ void ft_double_swap(LInt *n1, LInt *n2)
     *n2 = ft_swap(*n2);
 }
 
+// push the first elem of l2 to the top of lista
 void ft_push(LInt *lista, LInt *l2)
 {
     LInt n2;
@@ -275,19 +276,111 @@ void procura_menor(LInt nodo, t_menor_data *menor)
     }
 }
 
-void sort_stacks(LInt stack_a, LInt stack_b)
+int diff_dist_check(LInt *stack_a, LInt *stack_b, t_menor_data *menor, int total_elems)
+{
+    if (total_elems - menor->posicao < menor->posicao)
+    {
+        *stack_a = ft_reverse_rotate(*stack_a);
+        return 1;
+    }
+    else if (total_elems - menor->posicao > menor->posicao)
+    {
+        *stack_a = ft_rotate(*stack_a);
+        return 1;
+    }
+    else
+        return 0;
+}
+
+int is_maximo(LInt *lista, int x)
+{
+    LInt nodo;
+
+    nodo = *lista;
+    while (nodo != NULL)
+    {
+        if (x < nodo->valor)
+            return 0;
+        nodo = nodo->prox;
+    }
+    return 1;
+}
+
+// this function will search for the elem that is right bigger than the "menor"
+// and do the respoective rotate
+// if the distance remains the same, it means that the 2nd lowest elem is next to the lowest, so I'll sort
+void rotates_based_next_lowest(LInt *stack_a, LInt *stack_b, t_menor_data *menor, int down_shifts, int up_shifts, int t_elems)
+{
+    t_menor_data prox_menor;
+    int i;
+    LInt nodo;
+
+    prox_menor.valor = (*stack_a)->valor;
+    prox_menor.posicao = 0;
+    nodo = (*stack_a)->prox;
+    while (nodo != NULL)
+    {
+        if (prox_menor.valor > nodo->valor && nodo->valor > menor->valor)
+        {
+            prox_menor.valor = nodo->valor;
+            prox_menor.posicao = i;
+        }
+        i++;
+        nodo = nodo->prox;
+    }
+    if (is_maximo(stack_a, prox_menor.valor))
+        ft_push(stack_b, stack_a);
+    else if (!diff_dist_check(stack_a, stack_b, &prox_menor, t_elems))
+    {
+        menor->valor = prox_menor.valor;
+        menor->posicao = prox_menor.posicao;
+        rotates_based_next_lowest(stack_a, stack_b, menor, t_elems - menor->posicao, menor->posicao, t_elems);
+    }
+}
+
+void sort_two(LInt *stack)
+{
+    if ((*stack)->valor > (*stack)->prox->valor)
+        *stack = ft_swap(*stack);
+}
+
+void retorna_para_stack_a(LInt *stack_a, LInt *stack_b)
+{
+    while (*stack_b)
+    {
+        ft_push(stack_a, stack_b);
+    }
+}
+
+// (total_elems - menor.posicao) corresponde ao numero de moves roda para baixo;
+// menor.posicao corresponde ao numero de moves rodapara cima
+void sort_stacks(LInt *stack_a, LInt *stack_b)
 {
     t_menor_data menor;
     int total_de_elems;
 
-    total_de_elems = lista_len(stack_a);
+    total_de_elems = lista_len(*stack_a);
     if (total_de_elems == 1)
         return ;
-    while (!is_sorted(stack_a) || total_de_elems != lista_len(stack_a))
+    if (total_de_elems == 2)
     {
-        procura_menor(stack_a, &menor);
-        if (menor) // aqui temos de fazer os calculos, ja que temos o tamanho total da lista e a posicao do menor
+        sort_two(stack_a);
+        return ;
     }
+    while (!is_sorted(*stack_a))
+    {
+        procura_menor(*stack_a, &menor);
+        if (menor.posicao == 0)
+            ft_push(stack_b, stack_a);
+        if (total_de_elems - menor.posicao < menor.posicao)
+            *stack_a = ft_reverse_rotate(*stack_a);
+        else if (total_de_elems - menor.posicao > menor.posicao)
+            *stack_a = ft_rotate(*stack_a);
+        else
+            rotates_based_next_lowest(stack_a, stack_b, &menor,
+                    total_de_elems - menor.posicao, menor.posicao, total_de_elems);
+    }
+    retorna_para_stack_a(stack_a, stack_b);
 }
 
 int main(int argc, char **argv)
@@ -303,5 +396,8 @@ int main(int argc, char **argv)
     n2 = NULL; // ao iniciar os processos entre as
                // duas stacks tenho de colocar a segunda a NULL e puxar um elem 
                // da criada pelo argv para esta, usando a funcao ft_push
-    sort_stacks(nodo, n2);
+    sort_stacks(&nodo, &n2);
+    print_list(nodo);
+    liberta_lista(nodo);
+    liberta_lista(n2);
 }
