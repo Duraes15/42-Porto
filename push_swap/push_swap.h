@@ -6,7 +6,20 @@ typedef struct nodo
 {
     int valor;
     struct nodo *prox;
-} *LInt;
+} *LInt; // vai ser para apagar
+
+typedef struct double_nodo
+{
+    int valor;
+    struct double_nodo *prox;
+    int index;
+    int sa;
+    int sb;
+    int ra;
+    int rb;
+    int rra;
+    int rrb;
+}   *t_lint;
 
 typedef struct menor_valor
 {

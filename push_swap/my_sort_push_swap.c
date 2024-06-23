@@ -48,27 +48,37 @@ int just_int_numbers(char **argv, int argc) // stay
     return 1;
 }
 
+// LInt initializes_list(int x)
+// {
+//     LInt head;
+
+//     head = malloc(sizeof(struct nodo));
+//     head->valor = x;
+//     head->prox = NULL;
+//     return (head);
+// }
+
 // does the stack or linked list
-t_lint do_stack(char **argv, int argc) // stay
+LInt do_stack(char **argv, int argc) // stay
 {
     int i;
-    t_lint head;
-    t_lint nodo;
+    LInt head;
+    LInt nodo;
 
     i = 2;
-    head = malloc(sizeof(struct double_nodo));
+    head = malloc(sizeof(struct nodo));
     head->valor = ft_atoi_check_l(argv[1]);
     if (argc == 2)
     {
         head->prox = NULL;
         return head;
     }
-    nodo = malloc(sizeof(struct double_nodo));
+    nodo = malloc(sizeof(struct nodo));
     head->prox = nodo;
     while (i < argc - 1)
     {
         nodo->valor = ft_atoi_check_l(argv[i]);
-        nodo->prox = malloc(sizeof(struct double_nodo));
+        nodo->prox = malloc(sizeof(struct nodo));
         nodo = nodo->prox;
         i++;
     }
@@ -78,7 +88,7 @@ t_lint do_stack(char **argv, int argc) // stay
 }
 
 // esta funcao é para comentar
-void print_list(t_lint nodo) // stay
+void print_list(LInt nodo) // stay
 {
     while (nodo != NULL)
     {
@@ -88,9 +98,9 @@ void print_list(t_lint nodo) // stay
 }
 
 // free's the given linked list
-void liberta_lista(t_lint nodo) // stay
+void liberta_lista(LInt nodo) // stay
 {
-    t_lint ant;
+    LInt ant;
 
     while (nodo != NULL)
     {
@@ -101,7 +111,7 @@ void liberta_lista(t_lint nodo) // stay
 }
 
 // calculates the number o nodes of the list
-int lista_len(t_lint nodo) // stay
+int lista_len(LInt nodo) // stay
 {
     int i;
 
@@ -115,10 +125,10 @@ int lista_len(t_lint nodo) // stay
 }
 
 // swap the first 2 elems of the given list
-t_lint ft_swap(t_lint nodo, int flag) // stay
+LInt ft_swap(LInt nodo, int flag) // stay
 {
     int i;
-    t_lint second;
+    LInt second;
 
     i = 0;
     if (lista_len(nodo) <= 1)
@@ -132,10 +142,9 @@ t_lint ft_swap(t_lint nodo, int flag) // stay
         printf("sb\n");
     return (second);
 }
-
 // ft_printf printf
 // used to do the double swap
-void ft_double_swap(t_lint *n1, t_lint *n2) // stay
+void ft_double_swap(LInt *n1, LInt *n2) // stay
 {
     *n1 = ft_swap(*n1, 2);
     *n2 = ft_swap(*n2, 2);
@@ -143,9 +152,9 @@ void ft_double_swap(t_lint *n1, t_lint *n2) // stay
 }
 
 // push the first elem of l2 to the top of lista
-void ft_push(t_lint *lista, t_lint *l2, int flag) // stay
+void ft_push(LInt *lista, LInt *l2, int flag) // stay
 {
-    t_lint n2;
+    LInt n2;
 
     n2 = *l2;
     if (*l2 == NULL)
@@ -167,10 +176,10 @@ void ft_push(t_lint *lista, t_lint *l2, int flag) // stay
         printf("pb\n");
 }
 
-t_lint ft_rotate(t_lint node, int flag) // stay
+LInt ft_rotate(LInt node, int flag) // stay
 {
-    t_lint first;
-    t_lint second;
+    LInt first;
+    LInt second;
 
     first = node;
     if (node == NULL || lista_len(node) == 1)
@@ -188,18 +197,18 @@ t_lint ft_rotate(t_lint node, int flag) // stay
     return node;
 }
 
-void ft_double_rotate(t_lint *n1, t_lint *n2) // stay
+void ft_double_rotate(LInt *n1, LInt *n2) // stay
 {
     *n1 = ft_rotate(*n1, 2);
     *n2 = ft_rotate(*n2, 2);
     printf("rr\n");
 }
 
-t_lint ft_reverse_rotate(t_lint lista, int flag) // stay
+LInt ft_reverse_rotate(LInt lista, int flag) // stay
 {
-    t_lint first;
-    t_lint nodo;
-    t_lint temp;
+    LInt first;
+    LInt nodo;
+    LInt temp;
 
     if (lista == NULL || lista_len(lista) == 1)
         return (lista);
@@ -218,14 +227,14 @@ t_lint ft_reverse_rotate(t_lint lista, int flag) // stay
     return (nodo);
 }
 
-void ft_double_reverse_rotate(t_lint *n1, t_lint *n2) // stay
+void ft_double_reverse_rotate(LInt *n1, LInt *n2) // stay
 {
     *n1 = ft_reverse_rotate(*n1, 2);
     *n2 = ft_reverse_rotate(*n2, 2);
     printf("rrr\n");
 }
 
-int existe_na_lista(int x, t_lint nodo) // stay
+int existe_na_lista(int x, LInt nodo) // stay
 {
     while (nodo != NULL)
     {
@@ -236,9 +245,9 @@ int existe_na_lista(int x, t_lint nodo) // stay
     return 0;
 }
 
-int there_is_dup_numbers(t_lint nodo) // stay
+int there_is_dup_numbers(LInt nodo) // stay
 {
-    t_lint inicio;
+    LInt inicio;
 
     inicio = nodo;
     while (nodo->prox != NULL)
@@ -252,8 +261,8 @@ int there_is_dup_numbers(t_lint nodo) // stay
     }
     return 0;
 }
-
-int is_sorted(t_lint nodo) // stay
+// esta funcao vai sempre receber uma lista com mais do que um elemento
+int is_sorted(LInt nodo) // stay
 {
     if (nodo == NULL || lista_len(nodo) == 1)
         return 1;
@@ -266,15 +275,45 @@ int is_sorted(t_lint nodo) // stay
     return 1;
 }
 
-void sort_two(t_lint *stack, int flag) // stay
+void procura_menor(LInt nodo, t_menor_data *menor) // stay
 {
-    if ((*stack)->valor > (*stack)->prox->valor)
-        *stack = ft_swap(*stack, flag);
+    int i;
+
+    i = 1;
+    menor->valor = nodo->valor;
+    menor->posicao = 0;
+    nodo = nodo->prox;
+    while (nodo != NULL)
+    {
+        if (menor->valor > nodo->valor)
+        {
+            menor->valor = nodo->valor;
+            menor->posicao = i;
+        }
+        nodo = nodo->prox;
+        i++;
+    }
 }
 
-int is_max(t_lint *lista, int x) // stay
+int diff_dist_check(LInt *stack_a, t_menor_data *menor, int total_elems)
 {
-    t_lint nodo;
+    if (total_elems - menor->posicao < menor->posicao)
+    {
+        *stack_a = ft_reverse_rotate(*stack_a, 0);
+        return 1;
+    }
+    else if (total_elems - menor->posicao > menor->posicao)
+    {
+        *stack_a = ft_rotate(*stack_a, 0);
+        return 1;
+    }
+    else
+        return 0;
+}
+
+int is_maximo(LInt *lista, int x) // stay
+{
+    LInt nodo;
 
     nodo = *lista;
     while (nodo != NULL)
@@ -286,99 +325,86 @@ int is_max(t_lint *lista, int x) // stay
     return 1;
 }
 
-int is_min(t_lint *lista, int x)
+// this function will search for the elem that is right bigger than the "menor"
+// and do the respoective rotate
+// if the distance remains the same, it means that the 2nd lowest elem is next to the lowest, so I'll sort
+void rotates_based_next_lowest(LInt *stack_a, LInt *stack_b, t_menor_data *menor, int t_elems)
 {
-    t_lint nodo;
+    t_menor_data prox_menor;
+    int i;
+    LInt nodo;
 
-    nodo = *lista;
+    prox_menor.valor = (*stack_a)->valor;
+    prox_menor.posicao = 0;
+    nodo = (*stack_a)->prox;
+    i = 0;
     while (nodo != NULL)
     {
-        if (x > nodo->valor)
-            return 0;
+        if (prox_menor.valor > nodo->valor && nodo->valor > menor->valor)
+        {
+            prox_menor.valor = nodo->valor;
+            prox_menor.posicao = i++;
+        }
         nodo = nodo->prox;
     }
-    return 1;
-}
-
-// if (is_sorted(*stack))
-    //     return ;
-    // else if (is_max(stack, (*stack)->prox->valor))
-    // {
-    //     if (is_min(stack, (*stack)->prox->prox->valor))
-    //         (*stack) = ft_reverse_rotate((*stack), 0);
-    //     else
-    //     {
-    //         (*stack) = ft_reverse_rotate((*stack), 0);
-    //         (*stack) = ft_swap((*stack), 0);
-    //     }
-    // }
-    // else if (is_min(stack, (*stack)->prox->valor))
-    // {
-    //     if (is_max(stack, (*stack)->valor))
-    //     {
-    //         (*stack) = ft_reverse_rotate((*stack), 0);
-    //         (*stack) = ft_reverse_rotate((*stack), 0);
-    //     }
-    //     else
-    //         (*stack) = ft_swap((*stack), 0);
-    // }
-    // else
-    // {
-
-    // }
-void edge_case_three_sort(t_lint *stack)
-{
-    if (is_max(stack, (*stack)->prox->valor))
-        (*stack) = ft_reverse_rotate((*stack), 0);
-    else
-        (*stack) = ft_swap((*stack), 0);
-}
-
-void sort_three(t_lint *stack, int flag)
-{
-    if (is_min(stack, (*stack)->valor))
+    if (is_maximo(stack_a, prox_menor.valor))
+        ft_push(stack_b, stack_a, 1);
+    else if (!diff_dist_check(stack_a, &prox_menor, t_elems))
     {
-        if (!is_sorted(*stack))
-        {
-            (*stack) = ft_reverse_rotate((*stack), flag);
-            (*stack) = ft_swap((*stack), flag);
-        }
+        menor->valor = prox_menor.valor;
+        menor->posicao = prox_menor.posicao;
+        rotates_based_next_lowest(stack_a, stack_b, menor, t_elems);
     }
-    else if (is_max(stack, (*stack)->valor))
+}
+
+void sort_two(LInt *stack) // stay
+{
+    if ((*stack)->valor > (*stack)->prox->valor)
+        *stack = ft_swap(*stack, 0);
+}
+
+void retorna_para_stack_a(LInt *stack_a, LInt *stack_b)
+{
+    while (*stack_b)
     {
-        if (is_min(stack, (*stack)->prox->valor))
-        {
-            (*stack) = ft_reverse_rotate((*stack), flag);
-            (*stack) = ft_reverse_rotate((*stack), flag);
-        }
+        ft_push(stack_a, stack_b, 0);
+    }
+}
+
+// (total_elems - menor.posicao) corresponde ao numero de moves roda para baixo;
+// menor.posicao corresponde ao numero de moves rodapara cima
+void sort_stacks(LInt *stack_a, LInt *stack_b)
+{
+    t_menor_data menor;
+    int total_de_elems;
+
+    total_de_elems = lista_len(*stack_a);
+    if (total_de_elems == 1)
+        return ;
+    if (total_de_elems == 2)
+    {
+        sort_two(stack_a);
+        return ;
+    }
+    while (!is_sorted(*stack_a))
+    {
+        procura_menor(*stack_a, &menor);
+        if (menor.posicao == 0)
+            ft_push(stack_b, stack_a, 1);
+        else if (total_de_elems - menor.posicao < menor.posicao)
+            *stack_a = ft_reverse_rotate(*stack_a, 0);
+        else if (total_de_elems - menor.posicao > menor.posicao)
+            *stack_a = ft_rotate(*stack_a, 0);
         else
-        {
-            (*stack) = ft_swap((*stack), flag);
-            (*stack) = ft_reverse_rotate((*stack), flag);
-        }
+            rotates_based_next_lowest(stack_a, stack_b, &menor, total_de_elems);
     }
-    else
-        edge_case_three_sort(stack);
-}
-
-void after_separation(t_lint *stack_a, t_lint *stack_b)
-{
-    if (stack_b)
-}
-
-void sort_five(t_lint *stack_a, t_lint *stack_b)
-{
-    ft_push(stack_b, stack_a, 1);
-    ft_push(stack_b, stack_a, 1);
-    sort_two(stack_b, 1);
-    sort_three(stack_a, 0);
-    atfer_separation(stack_a, stack_b);
+    retorna_para_stack_a(stack_a, stack_b);
 }
 
 int main(int argc, char **argv)
 {
-    t_lint nodo;
-    t_lint n2;
+    LInt nodo;
+    LInt n2;
 
     if (argc == 1 || !just_int_numbers(argv, argc))
         error_function();
@@ -390,9 +416,9 @@ int main(int argc, char **argv)
                // da criada pelo argv para esta, usando a funcao ft_push
     // printf("Before sort\n");
     // print_list(nodo);
-    sort_three(&nodo, 0);
-    printf("After sort\n");
-    print_list(nodo);
+    sort_stacks(&nodo, &n2);
+    // printf("After sort\n");
+    // print_list(nodo);
     liberta_lista(nodo);
     liberta_lista(n2);
 }
