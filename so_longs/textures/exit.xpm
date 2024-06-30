@@ -1,0 +1,44 @@
+/* XPM */
+static char *exit_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"32 32 4 1",
+/* colors */
+"  c #FFFFFF",
+". c #000000",  // Black
+"o c #1a1a1a",  // Dark gray
+"X c #333333",  // Lighter gray
+/* pixels */
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"           .........            ",
+"         ..ooooooooo..          ",
+"       ..ooooooooooooo..        ",
+"      .ooooooooooooooooo.       ",
+"     .ooooooooooooooooooo.      ",
+"    .ooooooooooooooooooooo.     ",
+"   .ooooooooooooooooooooooo.    ",
+"  .ooooooooooooooooooooooooo.   ",
+" .ooooooooooooooooooooooooooo.  ",
+" .ooooooooooooooooooooooooooo.  ",
+" .ooooooooooooooooooooooooooo.  ",
+" .ooooooooooooooooooooooooooo.  ",
+" .ooooooooooooooooooooooooooo.  ",
+" .ooooooooooooooooooooooooooo.  ",
+"  .ooooooooooooooooooooooooo.   ",
+"   .ooooooooooooooooooooooo.    ",
+"    .ooooooooooooooooooooo.     ",
+"     .ooooooooooooooooooo.      ",
+"      .ooooooooooooooooo.       ",
+"       ..ooooooooooooo..        ",
+"         ..ooooooooo..          ",
+"           .........            ",
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"                                "
+};
+
