@@ -1,10 +1,12 @@
 NAME = push_swap
 
-FLAGS =  -Wall -Wextra -Werror
+FLAGS =  -Wall -Wextra -Werror -g
 LIBRARY = libft_printf/libft.a
 RM = rm -rf
 
-SRC = push_swap.c
+SRC = push_swap.c utils.c initialize_stack.c string_dealing.c \
+		reverse_rotate.c rotate.c push.c swap.c less_equal_than_3_algorithm.c \
+		big_algorithm.c utils2.c
 OBJ = $(SSRC:.c=.o)
 
 all: $(NAME)
