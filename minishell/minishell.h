@@ -19,9 +19,14 @@ typedef enum {
     TOKEN_EOF
 } TokenType;
 
+typedef struct bigStruct {
+	struct Token *cmds;
+	int error_return;
+} bigStruct;
+
 typedef struct Token {
     TokenType type;
-    char *value;
+    char **to_execute;
 	char *input_file;
 	char *output_file;
 	int append;
@@ -36,12 +41,12 @@ char *ft_prompt();
 int there_is_pipes(Token *cmds);
 void free_a_arrays(char **str);
 char *command_path(char **cmd, char **env);
-void child_process(char **to_execute, Token *cmds, char **env);
-void ft_cd_builtin(Token *cmds, char **to_execute);
+void child_process(Token *cmds, char **env);
+void ft_cd_builtin(Token *cmds);
 void ft_pwd_builtin(Token *cmd);
 int is_n_flag(char **to_execute);
 void decide_in_and_out(Token *cmd, int **fds);
-void ft_echo_builtin(char **to_execute, Token *cmd);
+void ft_echo_builtin(Token *cmd);
 void ft_env_builtin(Token *cmd, char **env);
 void write_in_fd(char *str, int fd);
 int number_of_strs(char **env);
@@ -52,7 +57,7 @@ int valid_export_args(char **to_execute, int fd);
 int exec_has_repeated_var(char *exec, char *env_var);
 char **ft_array_dup(char **envp);
 char **ft_envp_with_new_str(char **envp, int n_strs, char **to_execute);
-char **ft_export_builtin(Token *cmd, char **to_execute, char **envp);
+char **ft_export_builtin(Token *cmd, char **envp);
 char **ft_unset_builtin(char **to_execute, char **envp);
 void no_pipes(Token *cmds, char **envp);
 void with_pipes(Token *cmds, char **envp);

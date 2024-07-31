@@ -133,7 +133,7 @@ char *command_path(char **to_execute, char **env)
 	return NULL;
 }
 
-void child_process(char **to_execute, Token *cmds, char **env)
+void child_process(Token *cmds, char **env)
 {
 	int fd_in;
 	int fd_out;
@@ -153,7 +153,7 @@ void child_process(char **to_execute, Token *cmds, char **env)
 			fd_out = open(cmds->output_file, O_WRONLY, O_TRUNC, O_CREAT);
 		dup2(fd_out, 1);
 	}
-	execve(command_path(to_execute, env), to_execute, env);
+	execve(command_path(cmds->to_execute, env), cmds->to_execute, env);
 	if (cmds->input_file)
 		close (fd_in);
 	if (cmds->output_file)
@@ -161,13 +161,17 @@ void child_process(char **to_execute, Token *cmds, char **env)
 	exit(127);
 }
 
-void ft_cd_builtin(Token *cmds, char **to_execute)
+void ft_cd_builtin(Token *cmds)
 {
 	char *error;
 
-	if (chdir(cmds->value) == -1)
+	if (ft_strlen(cmds->to_execute[0]) != 2 || cmds->to_execute[1] == NULL)
+		write(1, "\n", 1);
+	else if (cmds->to_execute[2] != NULL)
+		printf("bash : cd: too many arguments\n");
+	else if (chdir(cmds->to_execute[1]) == -1)
 	{
-		error = ft_strjoin("minishell: cd: ", to_execute[1]);
+		error = ft_strjoin("minishell: cd: ", cmds->to_execute[1]);
 		perror(error);
 		free(error);
 	}
@@ -225,9 +229,9 @@ void decide_in_and_out(Token *cmd, int **fds)
 	if (cmd->output_file)
 	{
 		if (cmd->append)
-			*(fds[1]) = open(cmd->output_file, O_WRONLY | O_APPEND | O_CREAT);
+			(*fds)[1] = open(cmd->output_file, O_WRONLY | O_APPEND | O_CREAT);
 		else
-			*(fds[1]) = open(cmd->output_file, O_WRONLY | O_TRUNC | O_CREAT);
+			(*fds)[1] = open(cmd->output_file, O_WRONLY | O_TRUNC | O_CREAT);
 	}
 }
 
@@ -243,32 +247,32 @@ int roam_while_isnt_assigned_char(char *str, char c)
 	return i;
 }
 
-int is_even_quotes(char *str)
-{
-	int i;
-	int how_far_went;
-	int words;
-
-	i = 0;
-	words = 1;
-	while (str[i] != '\0')
-	{
-		how_far_went = 0;
-		if (str[i] == '\"' || str[i] == '\'')
-		{
-			if (str[i] == '\"')
-				how_far_went += roam_while_isnt_assigned_char(++i + str, '\"');
-			else if (str[i] == '\'')
-				how_far_went += roam_while_isnt_assigned_char(++i + str, '\'');
-			if (how_far_went == -1)
-				return 0;
-			words++;
-			i += how_far_went;
-		}
-		i++;
-	}
-	return words;
-}
+// int is_even_quotes(char *str)
+// {
+// 	int i;
+// 	int how_far_went;
+// 	int words;
+//
+// 	i = 0;
+// 	words = 1;
+// 	while (str[i] != '\0')
+// 	{
+// 		how_far_went = 0;
+// 		if (str[i] == '\"' || str[i] == '\'')
+// 		{
+// 			if (str[i] == '\"')
+// 				how_far_went += roam_while_isnt_assigned_char(++i + str, '\"');
+// 			else if (str[i] == '\'')
+// 				how_far_went += roam_while_isnt_assigned_char(++i + str, '\'');
+// 			if (how_far_went == -1)
+// 				return 0;
+// 			words++;
+// 			i += how_far_went;
+// 		}
+// 		i++;
+// 	}
+// 	return words;
+// }
 
 int fulfil_word(char *str, char **to_execute, char c)
 {
@@ -298,7 +302,10 @@ void separate_by_quote(char *str, int *i, char **ret, char c, int *j)
 	i_cpy = (*i);
 	k = 0;
 	while (str[i_cpy] != c)
+	{
+		printf("string na posicao %d tem caractere %c\n", i_cpy, str[i_cpy]);
 		i_cpy++;
+	}
 	(*ret) = malloc(sizeof(char) * (i_cpy - (*i) + 1));
 	(*ret)[i_cpy - (*i)] = '\0';
 	while (str[(*i)] != '\0' && str[(*i)] != c)
@@ -366,6 +373,7 @@ char **separate_command(char *str, int n_args)
 
 	j = 0;
 	i = 0;
+	printf("O numero de argumentos e' %d\n", n_args);
 	ret = malloc(sizeof(char *) * (n_args + 1));
 	while (str[i] != '\0')
 	{
@@ -381,14 +389,47 @@ char **separate_command(char *str, int n_args)
 	return (ret);
 }
 
+int where_is_last_n_flag(char **to_execute)
+{
+	int i;
+	int j;
+	int last_nflag_position;
+
+	i = 1;
+	last_nflag_position = 1;
+	while (to_execute[i] != NULL)
+	{
+		j = 0;
+		if (to_execute[i][j] == '-')
+		{
+			j++;
+			while (to_execute[i][j] == 'n')
+				j++;
+			if (to_execute[i][j] == '\0')
+				last_nflag_position = i;
+			else
+				break ;
+		}
+		i++;
+	}
+	return last_nflag_position;
+}
+
 // here, I need to free everything and close the file directorys, if needed
 void print_echo(int n_flag, char **to_execute, int *fds)
 {
 	int i;
 
-	i = 1;
+	if (n_flag)
+		i = where_is_last_n_flag(to_execute) + 1;
+	else
+		i = 1;
 	while (to_execute[i])
+	{
 		write_in_fd(to_execute[i++], fds[1]);
+		if (to_execute[i] != NULL)
+			write_in_fd(" ", fds[1]);
+	}
 	if (!n_flag)
 		write_in_fd("\n", fds[1]);
 	close_fds(fds);
@@ -398,7 +439,7 @@ void print_echo(int n_flag, char **to_execute, int *fds)
 // preciso de tratar do caso em que tem, p.e.: echo "Hello           World"
 //												echo $USER
 //												echo '$USER'
-void ft_echo_builtin(char **to_execute, Token *cmd) 
+void ft_echo_builtin(Token *cmd) 
 {
 	int *fds;
 	char *str_error;
@@ -407,15 +448,15 @@ void ft_echo_builtin(char **to_execute, Token *cmd)
 	i = 0;
 	fds = malloc(sizeof(int) * 2);
 	decide_in_and_out(cmd, &fds);
-	if (to_execute[0][4] != '\0')
+	if (ft_strlen(cmd->to_execute[0]) != 4)
 	{
-		str_error = ft_strjoin(to_execute[0], ": command not found");
+		str_error = ft_strjoin(cmd->to_execute[0], ": command not found");
 		write_in_fd(str_error, fds[1]);
 		write(fds[1], "\n", 1);
 		free(str_error);
 	}
 	else
-		print_echo(is_n_flag(to_execute), to_execute, fds);
+		print_echo(is_n_flag(cmd->to_execute), cmd->to_execute, fds);
 }
 
 void ft_env_builtin(Token *cmd, char **env)
@@ -610,7 +651,7 @@ char **ft_envp_with_new_str(char **envp, int n_strs, char **to_execute)
 // variables alphabetically sorteds.
 //
 // FALTA ME VERIFICAR SE O ENVIRONMENT JA TEM A VARIAVEL QUE QUERO COLOCAR
-char **ft_export_builtin(Token *cmd, char **to_execute, char **envp)
+char **ft_export_builtin(Token *cmd, char **envp)
 {
 	int n_strs;
 	char **new_envp;
@@ -619,14 +660,14 @@ char **ft_export_builtin(Token *cmd, char **to_execute, char **envp)
 	fd = 1;
 	if (cmd->output_file)
 		fd = open(cmd->output_file, O_RDONLY);
-	if (to_execute[1] == NULL)
+	if (cmd->to_execute[1] == NULL)
 		ft_env_sorted(envp, fd);
 	else
 	{
-		if (!valid_export_args(to_execute, fd))
+		if (!valid_export_args(cmd->to_execute, fd))
 			return envp;
 		n_strs = number_of_strs(envp);
-		new_envp = ft_envp_with_new_str(envp, n_strs, to_execute);
+		new_envp = ft_envp_with_new_str(envp, n_strs, cmd->to_execute);
 		free_a_arrays(envp);
 		envp = new_envp;
 	}
@@ -664,36 +705,33 @@ char **ft_unset_builtin(char **to_execute, char **envp)
 	return (new_envp);
 }
 
-void simple_command(char **to_execute, Token *cmds, char **envp)
+void simple_command(Token *cmds, char **envp)
 {
 	int pid;
 
 	pid = fork();
 	if (pid == 0)
-		child_process(to_execute, cmds, envp);
+		child_process(cmds, envp);
 	waitpid(pid, NULL, -1);
-	free_a_arrays(to_execute);
+	free_a_arrays(cmds->to_execute);
 }
 
 void no_pipes(Token *cmds, char **envp)
 {
-	char **to_execute;
-
-	to_execute = separate_command(cmds->value, is_even_quotes(cmds->value));
-	if (ft_strncmp(to_execute[0], "cd", 2) == 0)
-		ft_cd_builtin(cmds, to_execute);
-	else if (ft_strncmp(to_execute[0], "pwd", 3) == 0)
+	if (ft_strncmp(cmds->to_execute[0], "cd", 2) == 0)
+		ft_cd_builtin(cmds);
+	else if (ft_strncmp(cmds->to_execute[0], "pwd", 3) == 0)
 		ft_pwd_builtin(cmds);
-	else if (ft_strncmp(to_execute[0], "export", 6) == 0)
-		envp = ft_export_builtin(cmds, to_execute, envp);
-	else if (ft_strncmp(to_execute[0], "unset", 5) == 0)
-		envp = ft_unset_builtin(to_execute, envp);
-	else if (ft_strncmp(to_execute[0], "env", 3) == 0)
+	else if (ft_strncmp(cmds->to_execute[0], "export", 6) == 0)
+		envp = ft_export_builtin(cmds, envp);
+	else if (ft_strncmp(cmds->to_execute[0], "unset", 5) == 0)
+		envp = ft_unset_builtin(cmds->to_execute, envp);
+	else if (ft_strncmp(cmds->to_execute[0], "env", 3) == 0)
 		ft_env_builtin(cmds, envp);
-	else if (ft_strncmp(to_execute[0], "echo", 4) == 0)
-		ft_echo_builtin(to_execute, cmds);
+	else if (ft_strncmp(cmds->to_execute[0], "echo", 4) == 0)
+		ft_echo_builtin(cmds);
 	else
-		simple_command(to_execute, cmds, envp);
+		simple_command(cmds, envp);
 }
 
 void with_pipes(Token *cmds, char **envp)
@@ -739,10 +777,13 @@ int main(int ac, char **av, char **envp)
 		cmds = calloc(1, sizeof(struct Token));
 	cmds->pipe_to_next_token = 0;
 	cmds->next = NULL;
-	cmds->value = "echo -nnn \"Hello World\"";
-	cmds->append = 0;
-	cmds->input_file = "teset.txt";
-	cmds->output_file = NULL; 
+	cmds->to_execute = malloc(sizeof(char *) * 3);
+	cmds->to_execute[0] = ft_strdup("pwd");
+	cmds->to_execute[1] = ft_strdup("Hello World");
+	cmds->to_execute[2] = NULL;
+	cmds->append = 1;
+	cmds->input_file = NULL;
+	cmds->output_file = "teset.txt"; 
 	after_receiving_cmds(cmds, my_env);
 	free_list(cmds);
 }
